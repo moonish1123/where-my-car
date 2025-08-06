@@ -1,0 +1,90 @@
+[versions]
+agp = "8.11.1"
+kotlin = "2.2.0"
+coreKtx = "1.16.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.1"
+material = "1.12.0"
+kspVersion = "2.2.0-2.0.2" #KSP 버전은 kotlinVersion 과 호환되어야 함 #
+hiltVersion = "2.56.2" #Lib version 과 plugin version 이 같은데 정의는 여기와 app/libs.versions.toml 에서도 같이 확인해야 한다.
+composeBom = "2025.06.01" #https://developer.android.com/jetpack/androidx/releases/compose?hl=ko#boms
+composeCoil = "2.7.0" #https://coil-kt.github.io/coil/compose/
+composeMaterial = "1.3.2"
+activity = "1.10.1" #https://developer.android.com/jetpack/androidx/releases/activity
+lifeCycle = "2.9.2" #https://developer.android.com/jetpack/androidx/releases/lifecycle
+kotlin_serialization = "1.9.0"
+kotlin_coroutines = "1.10.2"
+firebaseBom = "33.1.2" #https://firebase.google.com/support/release-notes/android
+datastoreCoreAndroid = "1.1.7"
+androidx-room = "2.7.2"
+androidx-navigation = "2.9.1"
+androidx_navigation_compose_hilt = "1.2.0"
+#login
+google_login = "21.2.0"
+facebooksdk = "18.0.3" #https://developers.facebook.com/docs/android/downloads/
+firebase_ui_auth = "9.0.0" #
+googleServices = "4.4.3"
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+devtool-ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
+kotlin-serialization =  { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx_activity = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+androidx_lifecycle_runtime_ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifeCycle" }
+androidx_lifecycle_viewmodel_ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifeCycle" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+hilt_gradle_plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltVersion" }
+hilt_android = { module = "com.google.dagger:hilt-android", version.ref = "hiltVersion" }
+hilt_test = { module = "com.google.dagger:hilt-android-testing", version.ref = "hiltVersion" }
+hilt_compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltVersion" } #kapt
+androidx_compose_bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+androidx_compose_material = { module = "androidx.compose.material:material" }
+androidx_compose_animation = { module = "androidx.compose.animation:animation" }
+androidx_compose_ui_tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx_compose_activity = { module = "androidx.activity:activity-compose", version.ref = "activity" }
+androidx_compose_coil = { module = "io.coil-kt:coil-compose", version.ref = "composeCoil" }
+androidx_compose_material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial" }
+
+androidx_compose_navigation_hilt = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx_navigation_compose_hilt" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin_serialization" }
+
+androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
+androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "androidx-navigation" }
+androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "androidx-navigation" }
+#coroutines
+corotuines_core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin_coroutines" }
+corotuines_android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlin_coroutines" }
+#firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
+firebase-auth = { module = "com.google.firebase:firebase-auth-ktx" }
+firebase-store = { module = "com.google.firebase:firebase-firestore-ktx" }
+#login
+firebase-ui-auth = { group = "com.firebaseui", name = "firebase-ui-auth", version.ref = "firebase_ui_auth" }
+google-login = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google_login" }
+facebook-sdk = { group = "com.facebook.android", name = "facebook-android-sdk", version.ref = "facebooksdk" }
+
+[bundles]
+android_compose = ["androidx_compose_activity", "androidx_compose_coil", "androidx_compose_material", "androidx_compose_animation", "androidx_compose_ui_tooling", "androidx_compose_material3", "androidx_compose_navigation_hilt"]
+android_room = ["androidx-room-runtime", "androidx-room-ktx"]
+android_navigation = ["androidx-navigation-compose", "androidx-navigation-ui", "androidx-navigation-fragment"]
+firebase = ["firebase-auth", "firebase-crashlytics", "firebase-store"]
+kotlin_coroutines = ["corotuines_core", "corotuines_android"]
+logins = ["firebase-ui-auth", "google-login", "facebook-sdk"]

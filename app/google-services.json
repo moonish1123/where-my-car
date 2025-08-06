@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "542157933499",
+    "project_id": "wheremycar-809e7",
+    "storage_bucket": "wheremycar-809e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542157933499:android:06209d994d0c095688129e",
+        "android_client_info": {
+          "package_name": "com.brice.wheremycar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOXEqtrmfzwInQGkXD66bq9sXySF0oYJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
