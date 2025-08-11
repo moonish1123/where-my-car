@@ -28,12 +28,12 @@ class AuthActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            viewModel.getCurrentUser()?.let { user ->
-                navigateToMain()
-                return@launch
-            }
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            navigateToMain()
+            return
+        }
 
+        lifecycleScope.launch {
             launchSignInFlow()
         }
 
