@@ -99,9 +99,8 @@ class AuthActivity: AppCompatActivity() {
     }
 
     private fun navigateToMain() {
-        // TODO: 메인 액티비티로 이동
-        // val intent = Intent(this, MainActivity::class.java)
-        // startActivity(intent)
+        val intent = Intent(this, com.brice.wheremycar.ui.MainActivity::class.java)
+        startActivity(intent)
         finish()
     }
 }
