@@ -29,7 +29,8 @@ class AuthActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (FirebaseAuth.getInstance().currentUser != null) {
-            navigateToMain()
+            setResult(RESULT_OK)
+            finish()
             return
         }
 
@@ -73,11 +74,15 @@ class AuthActivity: AppCompatActivity() {
                 viewModel.handleLoginSuccess(user)
             } else {
                 Toast.makeText(this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                setResult(RESULT_CANCELED)
+                finish()
             }
         } else {
             // 로그인 실패 또는 취소
             val error = result.idpResponse?.error
             Toast.makeText(this, "로그인에 실패했습니다: ${error?.message}", Toast.LENGTH_SHORT).show()
+            setResult(RESULT_CANCELED)
+            finish()
         }
     }
 
@@ -85,22 +90,19 @@ class AuthActivity: AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.loginResult.collect { result ->
                 if (result.isSuccess) {
-                    // DB 처리까지 성공하면 메인으로 이동
-                    navigateToMain()
+                    // DB 처리까지 성공하면 RESULT_OK 반환
+                    setResult(RESULT_OK)
+                    finish()
                 } else {
                     Toast.makeText(
                         this@AuthActivity,
                         "프로필 생성에 실패했습니다: ${result.exceptionOrNull()?.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                    setResult(RESULT_CANCELED)
+                    finish()
                 }
             }
         }
-    }
-
-    private fun navigateToMain() {
-        val intent = Intent(this, com.brice.wheremycar.ui.MainActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 }

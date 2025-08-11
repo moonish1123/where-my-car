@@ -1,6 +1,7 @@
 package com.brice.wheremycar.ui.park
 
 import RegisterCarScreen
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,13 +18,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.brice.wheremycar.ui.auth.AuthActivity
 import com.brice.wheremycar.ui.park.feature.home.HomeScreen
 import com.brice.wheremycar.ui.park.model.ScreenState
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.activity.result.contract.ActivityResultContracts
 
 @AndroidEntryPoint
 class HomeActivity: AppCompatActivity() {
     private val mainViewModel: ParkHomeViewModel by viewModels()
+
+    private val authActivityResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // When AuthActivity returns, re-evaluate the screen state
+        mainViewModel.checkAuthenticationAndCarRegistration()
+    }
 
     override fun onCreate(
         savedInstanceState: Bundle?) {
@@ -46,11 +57,14 @@ class HomeActivity: AppCompatActivity() {
                     navController = navController,
                     startDestination = screenState.name // ScreenState에 route 프로퍼티 정의 추천
                 ) {
-                    composable(ScreenState.NeedAuth.name) { /* ... */ }
+                    composable(ScreenState.NeedAuth.name) { 
+                        LaunchedEffect(Unit) {
+                            authActivityResultLauncher.launch(Intent(this@HomeActivity, AuthActivity::class.java))
+                        }
+                    }
                     composable(ScreenState.NeedRegisterCar.name) { RegisterCarScreen(navController) }
                     composable(ScreenState.ShowHome.name) { HomeScreen() }
                 }
             }
         }
     }
-}
