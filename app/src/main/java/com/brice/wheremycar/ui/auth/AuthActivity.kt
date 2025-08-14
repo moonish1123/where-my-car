@@ -28,12 +28,13 @@ class AuthActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleScope.launch {
-            viewModel.getCurrentUser()?.let { user ->
-                navigateToMain()
-                return@launch
-            }
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            setResult(RESULT_OK)
+            finish()
+            return
+        }
 
+        lifecycleScope.launch {
             launchSignInFlow()
         }
 
@@ -73,11 +74,15 @@ class AuthActivity: AppCompatActivity() {
                 viewModel.handleLoginSuccess(user)
             } else {
                 Toast.makeText(this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                setResult(RESULT_CANCELED)
+                finish()
             }
         } else {
             // 로그인 실패 또는 취소
             val error = result.idpResponse?.error
             Toast.makeText(this, "로그인에 실패했습니다: ${error?.message}", Toast.LENGTH_SHORT).show()
+            setResult(RESULT_CANCELED)
+            finish()
         }
     }
 
@@ -85,23 +90,19 @@ class AuthActivity: AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.loginResult.collect { result ->
                 if (result.isSuccess) {
-                    // DB 처리까지 성공하면 메인으로 이동
-                    navigateToMain()
+                    // DB 처리까지 성공하면 RESULT_OK 반환
+                    setResult(RESULT_OK)
+                    finish()
                 } else {
                     Toast.makeText(
                         this@AuthActivity,
                         "프로필 생성에 실패했습니다: ${result.exceptionOrNull()?.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                    setResult(RESULT_CANCELED)
+                    finish()
                 }
             }
         }
-    }
-
-    private fun navigateToMain() {
-        // TODO: 메인 액티비티로 이동
-        // val intent = Intent(this, MainActivity::class.java)
-        // startActivity(intent)
-        finish()
     }
 }

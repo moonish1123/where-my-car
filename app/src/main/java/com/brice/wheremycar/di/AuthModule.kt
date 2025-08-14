@@ -9,26 +9,40 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.brice.wheremycar.data.auth.repository.UserRepositoryImpl
+import com.brice.wheremycar.domain.repository.UserRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.Binds
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AuthModule {
-    @Provides
-    @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+abstract class AuthModule {
 
-    @Provides
-    @Singleton
-    fun provideGoogleSignInOptions(@ApplicationContext context: Context): GoogleSignInOptions =
-        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(/*context.getString(R.string.default_web_client_id)*/"")
-            .requestEmail()
-            .build()
+    @Binds
+    abstract fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
 
-    @Provides
-    @Singleton
-    fun provideGoogleSignInClient(@ApplicationContext context: Context, gso: GoogleSignInOptions): GoogleSignInClient =
-        GoogleSignIn.getClient(context, gso)
+    companion object {
+        @Provides
+        @Singleton
+        fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+        @Provides
+        @Singleton
+        fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+        @Provides
+        @Singleton
+        fun provideGoogleSignInOptions(@ApplicationContext context: Context): GoogleSignInOptions =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(/*context.getString(R.string.default_web_client_id)*/ "")
+                .requestEmail()
+                .build()
+
+        @Provides
+        @Singleton
+        fun provideGoogleSignInClient(@ApplicationContext context: Context, gso: GoogleSignInOptions): GoogleSignInClient =
+            GoogleSignIn.getClient(context, gso)
+    }
 }

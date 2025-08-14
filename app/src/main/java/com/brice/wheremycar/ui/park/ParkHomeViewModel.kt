@@ -7,9 +7,12 @@ import com.brice.wheremycar.domain.usecase.ParkUseCase
 import com.brice.wheremycar.ui.park.model.ParkInfoUiState
 import com.brice.wheremycar.ui.park.model.ParkState
 import com.brice.wheremycar.ui.park.model.ScreenState
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
@@ -22,7 +25,30 @@ import javax.inject.Inject
 class ParkHomeViewModel @Inject constructor(
     val userUseCase: UserUsecase,
     val parkUseCase: ParkUseCase,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
+
+    private val _screenState = MutableStateFlow(ScreenState.Loading)
+    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
+
+    init {
+        checkAuthenticationAndCarRegistration()
+    }
+
+    fun checkAuthenticationAndCarRegistration() {
+        viewModelScope.launch {
+            if (auth.currentUser == null) {
+                _screenState.value = ScreenState.NeedAuth
+                return@launch
+            }
+
+            _screenState.value = if (parkUseCase.getLatestParkInfo()?.carNumber.isNullOrBlank()) {
+                ScreenState.NeedRegisterCar
+            } else {
+                ScreenState.ShowHome
+            }
+        }
+    }
 
     val state = userUseCase.getUserAsFlow().flatMapLatest { user ->
         if (user == null) {
@@ -34,20 +60,6 @@ class ParkHomeViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.Companion.WhileSubscribed(5000L),
         initialValue = ParkInfoUiState() // 초기값은 로딩 상태
-    )
-
-    val screenState: StateFlow<ScreenState> = flow {
-        emit(
-            if (parkUseCase.getLatestParkInfo()?.carNumber.isNullOrBlank()) {
-                ScreenState.NeedRegisterCar
-            } else {
-                ScreenState.ShowHome
-            }
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000L),
-        initialValue = ScreenState.Loading // 초기값은 로딩 상태
     )
 
     fun saveCarAndParkInfo(carNumber: String, floor: Int, state: ParkState) {
@@ -88,10 +100,5 @@ class ParkHomeViewModel @Inject constructor(
             }
             saveCarAndParkInfo(currentState.copy(parkState = newParkState))
         }
-    }
-
-    fun checkNeedAuth() {
-        Firebase
-        FirebaseAuth.
     }
 }

@@ -1,4 +1,4 @@
-package com.brice.wheremycar.data.parkplace.repository
+package com.brice.wheremycar.data.auth.repository
 
 import com.brice.wheremycar.data.auth.model.UserModel
 import com.brice.wheremycar.domain.repository.UserRepository
