@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,34 +23,44 @@ class ParkHomeViewModel @Inject constructor(
     val parkUseCase: ParkUseCase,
 ) : ViewModel() {
 
-    val state = userUseCase.getUserAsFlow().flatMapLatest { user ->
+    // ParkInfoData를 ParkInfoUiState로 변환
+    val parkInfoState: StateFlow<ParkInfoUiState> = userUseCase.getUserAsFlow().flatMapLatest { user ->
         if (user == null) {
             throw IllegalArgumentException("user not found")
         } else {
             parkUseCase.getParkInfoAsFlow(user)
         }
+    }.map { parkInfoData ->
+        parkInfoData?.let { ParkInfoUiState(it) } ?: ParkInfoUiState()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Companion.WhileSubscribed(5000L),
-        initialValue = ParkInfoUiState() // 초기값은 로딩 상태
+        initialValue = ParkInfoUiState() // 초기값
     )
 
     val screenState: StateFlow<ScreenState> = flow {
+        val user = userUseCase.getUser()
         emit(
-            if (parkUseCase.getLatestParkInfo()?.carNumber.isNullOrBlank()) {
-                ScreenState.NeedRegisterCar
+            if (user == null) {
+                ScreenState.NeedAuth
             } else {
-                ScreenState.ShowHome
+                val parkInfo = parkUseCase.getLatestParkInfo(user)
+                if (parkInfo?.carNumber.isNullOrBlank()) {
+                    ScreenState.NeedRegisterCar
+                } else {
+                    ScreenState.ShowHome
+                }
             }
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Companion.WhileSubscribed(5000L),
-        initialValue = ScreenState.Loading // 초기값은 로딩 상태
+        initialValue = ScreenState.Loading
     )
 
     fun saveCarAndParkInfo(carNumber: String, floor: Int, state: ParkState) {
         viewModelScope.launch {
+            val user = userUseCase.getUser() ?: return@launch
             val parkInfo = ParkInfoUiState(
                 carNumber = carNumber,
                 parkingFloor = floor,
@@ -59,25 +68,24 @@ class ParkHomeViewModel @Inject constructor(
                 parkingZone = ""
             )
 
-            parkUseCase.addParkInfo(parkInfo)
+            parkUseCase.addParkInfo(user, parkInfo)
         }
     }
 
     fun saveCarAndParkInfo(state: ParkInfoUiState) {
         viewModelScope.launch {
-            parkUseCase.addParkInfo(state)
+            val user = userUseCase.getUser() ?: return@launch
+            parkUseCase.addParkInfo(user, state)
         }
     }
 
     fun updateParkingFloor(newFloor: Int) {
         viewModelScope.launch {
-            // 현재 상태를 기반으로 새로운 상태 객체 생성
             val currentState = parkInfoState.value
             saveCarAndParkInfo(currentState.copy(parkingFloor = newFloor))
         }
     }
 
-    // 2. 주차 상태 토글 함수
     fun toggleParkingState() {
         viewModelScope.launch {
             val currentState = parkInfoState.value
@@ -88,10 +96,5 @@ class ParkHomeViewModel @Inject constructor(
             }
             saveCarAndParkInfo(currentState.copy(parkState = newParkState))
         }
-    }
-
-    fun checkNeedAuth() {
-        Firebase
-        FirebaseAuth.
     }
 }
